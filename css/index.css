@@ -61,3 +61,43 @@ body {
     font-size: 22px;
     font-weight: 600;
 }
+
+.menu-item{
+    display:inline-block;
+    cursor:pointer;
+  
+}
+.menu-title{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+.dropdown{
+    display:none;
+    position:absolute;
+}
+.dropdown li {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.dropdown li:last-child {
+    border-bottom: none;
+}
+
+.dropdown li:hover {
+    background: #f2f2f2;
+    cursor: pointer;
+}
+
+
+
+
+.footer{
+    display:flex;   
+}
+.footer-content{
+    display:inline-block;
+}

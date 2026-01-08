@@ -1,3 +1,5 @@
+console.log("HEADER JS LOADED");
+
 window.onload = function () {
     const text = document.getElementById("movingText");
     const container = document.querySelector(".moveText");
