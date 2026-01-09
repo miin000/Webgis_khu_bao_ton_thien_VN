@@ -14,6 +14,7 @@ window.onload = function () {
         if (x < -text.offsetWidth) {
             x = container.offsetWidth;
         }
+        console.log('Dinh An Dep Trai');
 
         requestAnimationFrame(animate);
     }
