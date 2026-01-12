@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bản đồ các khu bảo tồn thiên nhiên</title>
+
     <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/map.css">
+    <link rel="stylesheet" href="./leaflet/dist/leaflet.css">
+
 </head>
 
 <body>
@@ -66,7 +70,7 @@
         </div>
 
         <div class="map-container">
-            <h2>BẢN ĐỒ CÁC KHU BẢO TỒN THIÊN NHIÊN VIỆT NAM</h2>
+            <div id="map"></div>
         </div>
         
     </main>
@@ -74,7 +78,7 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="about">
-                <img src="assets/images/logo.png" alt="logo" class="footer-logo"/>
+                <img src="assets/images/logo.png" alt="logo" class="footer-logo" style="width: 50px; height: 50px;"/>
                 <p> Bộ nông nghiệp và môi trường <br>
                     <strong> CỤC BẢO TỒN THIÊN NHIÊN VÀ ĐA DẠNG SINH HỌC </strong>
                 </p>
@@ -99,9 +103,11 @@
         </div>
     </footer>
 
+    <script src="./leaflet/dist/leaflet.js"></script>
     <script src="./js/header.js"></script>
     <script src="./js/main.js"></script>
     <script src="./js/footer.js"></script>
+    <script src="./js/map.js"></script>
 </body>
 
 </html> 
