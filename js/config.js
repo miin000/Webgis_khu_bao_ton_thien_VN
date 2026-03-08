@@ -18,12 +18,12 @@ GIS.config = (function () {
 
         // Màu theo loại khu bảo tồn
         TYPE_COLORS: {
-            'Vườn quốc gia':                 '#1a7a2e',
-            'Khu bảo tồn thiên nhiên':       '#0f7b6c',
-            'Khu dự trữ thiên nhiên':        '#0d8a9e',
-            'Khu bảo tồn loài và sinh cảnh': '#e07b00',
+            'Vườn quốc gia':                 '#00aa25',
+            'Khu bảo tồn thiên nhiên':       '#00ffdd',
+            'Khu dự trữ thiên nhiên':        '#006e7f',
+            'Khu bảo tồn loài và sinh cảnh': '#ed8bba',
             'Khu bảo vệ cảnh quan':          '#7b5ea7',
-            'Khu dự trữ sinh quyển':         '#2c6fbf'
+            'Khu dự trữ sinh quyển':         '#70a6e7'
         },
 
         // Nhãn hiển thị cho từng trường trong bảng chi tiết
