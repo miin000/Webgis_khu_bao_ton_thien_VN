@@ -101,9 +101,11 @@
     </footer>
 
     <script src="./leaflet/dist/leaflet.js"></script>
-    <script src="./js/header.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/footer.js"></script>
+    <!-- Thứ tự load quan trọng: config → map-init → protected-areas → controls → map (entry) -->
+    <script src="./js/config.js"></script>
+    <script src="./js/map-init.js"></script>
+    <script src="./js/protected-areas.js"></script>
+    <script src="./js/controls.js"></script>
     <script src="./js/map.js"></script>
 </body>
 
