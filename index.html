@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bản đồ các khu bảo tồn thiên nhiên</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="./css/index.css">
     <link rel="stylesheet" href="./css/map.css">
@@ -15,62 +18,60 @@
     <header class="header">
         <img src="assets/images/logo.png" alt="logo" class="logo"/>
         <div class="header-text">
-            <p> Bộ nông nghiệp và môi trường <br>
-                <strong> CỤC BẢO TỒN THIÊN NHIÊN VÀ ĐA DẠNG SINH HỌC </strong>
+            <p>Cổng thông tin chuyên đề</p>
+            <p>
+                <strong>WEBGIS CÁC KHU BẢO TỒN THIÊN NHIÊN VIỆT NAM</strong>
             </p>
         </div>
         <div class="moveText">
-            <span id="movingText">Trang thông tin quốc gia về bảo tồn thiên nhiên và đa dạng sinh học</span>
+            <span id="movingText">Hệ thống bản đồ chuyên đề đang trong giai đoạn hoàn thiện dữ liệu và chức năng.</span>
         </div>
 
     </header>
     <main>
         <div class="toolbar">
             <nav class="navbar">
-                <div class="menu-item">
-                    <span class="menu-title">GIỚI THIỆU</span>
-                    <ul class="dropdown" >
-                        <li>Chức năng nhiệm vụ</li>
-                        <li>Sơ đồ tổ chức</li>
-                        <li>Lãnh đạo Cục</li>
-                        <li>Lịch sử hình thành</li>
-                    </ul>
-                </div>
-
-                <div class="menu-item">
-                    <span class="menu-title">CHÍNH SÁCH – PHÁP LUẬT</span>
-                    <ul class="dropdown" >
-                        <li>Văn bản của Đảng</li>
-                        <li>Luật, Nghị định, Thông tư</li>
-                        <li>Chiến lược, quy hoạch, kế hoạch</li>
-                        <li>Quy chuẩn, tiêu chuẩn, quy định kỹ thuật</li>
-                        <li>Văn bản dự thảo lấy ý kiến</li>
-                    </ul>
-                </div>
-
-                <div class="menu-item">
-                    <span class="menu-title">ĐIỀU ƯỚC QUỐC TẾ</span>
-                    <ul class="dropdown" >
-                        <li>Công ước</li>
-                        <li>Nghị định thư</li>
-                        <li>Thoả thuận,sáng kiến</li>
-                    </ul>
-                </div>
-
-                <div class="menu-item">
-                    <span class="menu-title">ĐỐI TƯỢNG - CÔNG CỤ</span>
-                    <ul class="dropdown">
-                        <li>Đối tượng bảo tồn thiên nhiên và đa dạng sinh học</li>
-                        <li>Công cụ bảo tồn thiên nhiên và đa dạng sinh học</li>
-                    </ul>
-                </div>
+                <ul class="simple-nav">
+                    <li><a href="#">Trang chủ</a></li>
+                    <li><a href="#">Bản đồ</a></li>
+                    <li><a href="#">Dữ liệu</a></li>
+                    <li><a href="#">Đang cập nhật</a></li>
+                </ul>
 
             </nav>
 
         </div>
 
         <div class="map-container">
-            <div id="map"></div>
+            <section class="map-stage">
+                <div class="map-toolbar">
+                    <div class="map-toolbar-title">Bản đồ WebGIS khu bảo tồn thiên nhiên Việt Nam</div>
+                    <div class="map-toolbar-actions">
+                        <button id="btnResetView" type="button">Toàn cảnh Việt Nam</button>
+                        <a id="btnOpenWms" href="http://127.0.0.1:8080/geoserver/baoton_vn/wms" target="_blank" rel="noopener noreferrer">Mở WMS</a>
+                    </div>
+                </div>
+                <div id="map"></div>
+                <div class="map-statusbar">
+                    <span id="statusCoords">Tọa độ: --</span>
+                    <span id="statusZoom">Zoom: --</span>
+                    <span id="statusLayer">2 lớp: vietnam_provines · protected_area_vn</span>
+                </div>
+            </section>
+            <aside class="info-panel" id="infoPanel">
+                <h2>Khu bảo tồn thiên nhiên</h2>
+                <p class="panel-hint">Nhấn vào điểm trên bản đồ để xem thông tin chi tiết.</p>
+                <div class="panel-block">
+                    <h3>Lọc theo loại khu bảo tồn</h3>
+                    <div id="filterContainer" class="filter-legend">
+                        <p class="filter-loading">Đang tải dữ liệu…</p>
+                    </div>
+                </div>
+                <div class="panel-block" id="detailPanel" hidden>
+                    <h3>Thông tin chi tiết</h3>
+                    <div id="detailContent"></div>
+                </div>
+            </aside>
         </div>
         
     </main>
@@ -79,27 +80,23 @@
         <div class="footer-content">
             <div class="about">
                 <img src="assets/images/logo.png" alt="logo" class="footer-logo" style="width: 50px; height: 50px;"/>
-                <p> Bộ nông nghiệp và môi trường <br>
-                    <strong> CỤC BẢO TỒN THIÊN NHIÊN VÀ ĐA DẠNG SINH HỌC </strong>
+                <p>
+                    <strong>WEBGIS CÁC KHU BẢO TỒN THIÊN NHIÊN VIỆT NAM</strong>
                 </p>
-                <p>Môn học: ứng dụng webgis <br>
-                    
+                <p>Nền tảng bản đồ chuyên đề phục vụ tra cứu và theo dõi khu bảo tồn thiên nhiên trên phạm vi toàn quốc.</p>
             </div>
             <div class="about">
                 <h3>Liên hệ</h3>
-                <p>Địa chỉ: Số 10, đường Tôn Thất Thuyết, quận Cầu Giấy, Hà Nội</p>
-                <p>Điện thoại: (024) 3795 6321</p>
-                <p>Email:</p>
+                <p></p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Bản quyền thuộc về Cục Bảo tồn Thiên nhiên và Đa dạng Sinh học<p>
-                <ul class="footer-list">
-                    <li><a href="#">Trang nội bộ</a></li>
-                    <li><a href="#">Hồ sơ công việc</a></li>
-                    <li><a href="#">Thư điện tử</a></li>
-                    <li><a href="#">Thủ tục hành chính</a></li>
-                </ul>
+            <p>&copy; 2026 WebGIS các khu bảo tồn thiên nhiên Việt Nam</p>
+            <ul class="footer-list">
+                <li><a href="#">Bản đồ</a></li>
+                <li><a href="#">Dữ liệu</a></li>
+                <li><a href="#">Ghi chú</a></li>
+            </ul>
         </div>
     </footer>
 

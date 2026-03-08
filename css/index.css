@@ -1,6 +1,7 @@
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;
+    background: linear-gradient(180deg, #f4fbf8 0%, #eff5f3 35%, #f9fbfc 100%);
 }
 
 #map { 
@@ -13,7 +14,7 @@ body {
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
     column-gap: 20px;
-    background: #eaf4f3;
+    background: linear-gradient(110deg, #e6f7f2 0%, #f3fbf8 58%, #eaf4f3 100%);
     padding: 20px 30px;
     align-items: start;
 }
@@ -25,23 +26,24 @@ body {
 }
 
 
-.header-left {
+.header-text {
     grid-column: 2;
     grid-row: 1;
 }
 
-.header-left p {
+.header-text p {
     margin: 0;
     line-height: 1.4;
     color: #2c3e50;
     font-size: 16px;
 }
 
-.header-left strong {
+.header-text strong {
     display: block;
     font-size: 26px;
     font-weight: 700;
     letter-spacing: 0.4px;
+    color: #0f5f57;
 }
 
 
@@ -96,12 +98,114 @@ body {
     cursor: pointer;
 }
 
-
-
-
-.footer{
-    display:flex;   
+.toolbar {
+    width: min(1280px, calc(100% - 36px));
+    margin: 12px auto 0;
 }
-.footer-content{
-    display:inline-block;
+
+.navbar {
+    border: 1px solid #cce2dc;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(8, 68, 56, 0.1);
+}
+
+.simple-nav {
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.simple-nav a {
+    display: inline-block;
+    padding: 7px 11px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #19584b;
+    font-weight: 600;
+    background: #ecf8f4;
+    border: 1px solid #cae5de;
+    font-size: 14px;
+}
+
+.simple-nav a:hover {
+    background: #dff2ec;
+}
+
+
+
+
+.footer {
+    margin-top: 20px;
+    background: linear-gradient(125deg, #0a4f46 0%, #0f665d 58%, #0d5d54 100%);
+    color: #e9f6f2;
+    padding: 20px;
+}
+
+.footer-content {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.about p,
+.about h3 {
+    margin: 8px 0;
+}
+
+.footer-bottom {
+    width: min(1280px, 100%);
+    margin: 10px auto 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.footer-list {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.footer-list a {
+    color: #def7ef;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.footer-list a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 14px;
+    }
+
+    .header-text strong {
+        font-size: 20px;
+    }
+
+    #movingText {
+        font-size: 16px;
+    }
+
+    .toolbar {
+        width: calc(100% - 20px);
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
 }
