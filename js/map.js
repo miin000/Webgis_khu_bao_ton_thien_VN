@@ -21,6 +21,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Bước 2 – tải và hiển thị khu bảo tồn
     GIS.initProtectedAreas(map);
 
+    // Bước 2b – bật giao diện CRUD và logs
+    GIS.initAdmin(map);
+
+    // Bước 2c – tải thống kê theo loại khu bảo tồn
+    GIS.initStats();
+
     // Bước 3 – gắn các điều khiển UI
     GIS.initControls(map, layers);
+
+    GIS.onMainTabChanged = function (tabId) {
+        if (tabId === 'pageMap') {
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 50);
+        }
+    };
 });

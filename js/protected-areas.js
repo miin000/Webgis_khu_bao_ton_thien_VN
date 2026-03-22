@@ -21,6 +21,7 @@ GIS.initProtectedAreas = function (map) {
     var wfsUrl = cfg.wfsUrl
         + '?service=WFS&version=1.0.0&request=GetFeature'
         + '&typeName=baoton_vn:protected_area_vn&outputFormat=application/json';
+    var apiGeoJsonUrl = cfg.apiBaseUrl + '/protected-areas/geojson';
 
     // ─────────────────────────────────────────────────────────────────────────
     // Bảng chi tiết
@@ -141,41 +142,61 @@ GIS.initProtectedAreas = function (map) {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Tải dữ liệu WFS
-    // ─────────────────────────────────────────────────────────────────────────
+    function processData(data) {
+        rawData = data;
 
-    fetch(wfsUrl)
+        // Thu thập các loại khu bảo tồn có trong dữ liệu
+        var types = {};
+        (data.features || []).forEach(function (f) {
+            var t = String((f.properties && f.properties.type) || '').trim();
+            if (t) { types[t] = true; activeTypes[t] = true; }
+        });
+
+        buildFilter(Object.keys(types).sort());
+        renderLayer();
+    }
+
+    function loadFromWfs() {
+        return fetch(wfsUrl)
         .then(function (r) {
             if (!r.ok) throw new Error('WFS HTTP ' + r.status);
             return r.json();
         })
-        .then(function (data) {
-            rawData = data;
+        .then(processData);
+    }
 
-            // Thu thập các loại khu bảo tồn có trong dữ liệu
-            var types = {};
-            (data.features || []).forEach(function (f) {
-                var t = String((f.properties && f.properties.type) || '').trim();
-                if (t) { types[t] = true; activeTypes[t] = true; }
+    function loadPreferredSource() {
+        fetch(apiGeoJsonUrl)
+            .then(function (r) {
+                if (!r.ok) throw new Error('API HTTP ' + r.status);
+                return r.json();
+            })
+            .then(processData)
+            .catch(function (apiErr) {
+                console.warn('API thất bại, chuyển sang WFS:', apiErr);
+                loadFromWfs().catch(function (wfsErr) {
+                    // WFS bị lỗi (thường do CORS) → dùng WMS làm fallback
+                    console.warn('WFS thất bại, dùng WMS fallback:', wfsErr);
+
+                    var el = document.getElementById('filterContainer');
+                    if (el) el.innerHTML =
+                        '<p class="filter-error">Không tải được API/WFS.<br>Vui lòng kiểm tra backend hoặc CORS GeoServer.</p>';
+
+                    L.tileLayer.wms(cfg.wmsUrl, {
+                        layers:      'baoton_vn:protected_area_vn',
+                        format:      'image/png',
+                        transparent: true,
+                        version:     '1.1.1'
+                    }).addTo(map);
+                });
             });
+    }
 
-            buildFilter(Object.keys(types).sort());
-            renderLayer();
-        })
-        .catch(function (err) {
-            // WFS bị lỗi (thường do CORS) → dùng WMS làm fallback
-            console.warn('WFS thất bại, dùng WMS fallback:', err);
+    // Expose for admin CRUD so map can be refreshed after create/update/delete.
+    GIS.refreshProtectedAreas = loadPreferredSource;
 
-            var el = document.getElementById('filterContainer');
-            if (el) el.innerHTML =
-                '<p class="filter-error">Không tải được WFS.<br>Vui lòng bật CORS trên GeoServer.</p>';
-
-            L.tileLayer.wms(cfg.wmsUrl, {
-                layers:      'baoton_vn:protected_area_vn',
-                format:      'image/png',
-                transparent: true,
-                version:     '1.1.1'
-            }).addTo(map);
-        });
+    // ─────────────────────────────────────────────────────────────────────────
+    // Tải dữ liệu API (ưu tiên) -> WFS -> WMS
+    // ─────────────────────────────────────────────────────────────────────────
+    loadPreferredSource();
 };

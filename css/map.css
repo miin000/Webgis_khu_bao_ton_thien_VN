@@ -103,6 +103,11 @@
     font-size: 14px;
 }
 
+.page-panel {
+    width: min(980px, 100%);
+    margin: 0 auto;
+}
+
 .panel-block {
     border: 1px solid var(--gis-border);
     border-radius: 10px;
@@ -261,6 +266,151 @@
     color: var(--gis-text);
 }
 
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-row span {
+    font-size: 12px;
+    color: #355951;
+    font-weight: 600;
+}
+
+.form-row input,
+.form-row select {
+    border: 1px solid #c9ded8;
+    border-radius: 6px;
+    padding: 7px 8px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #ffffff;
+}
+
+.form-row input[readonly] {
+    background: #f1f6f5;
+    color: #46635d;
+}
+
+.crud-actions {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.crud-actions button,
+#btnReloadLogs {
+    border: 1px solid #aacfc5;
+    background: #ecf8f5;
+    color: #0f5f57;
+    border-radius: 8px;
+    padding: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.crud-actions button:hover,
+#btnReloadLogs:hover {
+    background: #d9f0e9;
+}
+
+.crud-actions .danger {
+    border-color: #dfafb4;
+    background: #fff2f4;
+    color: #9e2a37;
+}
+
+.crud-actions .danger:hover {
+    background: #fee3e7;
+}
+
+.panel-note {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #567b73;
+}
+
+.crud-message {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #2f6f5e;
+}
+
+.crud-message.error {
+    color: #a33;
+}
+
+.table-wrap {
+    margin-top: 8px;
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid #d5e7e2;
+    border-radius: 8px;
+}
+
+.list-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.list-pagination button {
+    border: 1px solid #aacfc5;
+    background: #ecf8f5;
+    color: #0f5f57;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.list-pagination button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#listPageInfo {
+    font-size: 12px;
+    color: #2f6f5e;
+}
+
+.simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: #fff;
+}
+
+.simple-table th,
+.simple-table td {
+    border-bottom: 1px solid #edf4f2;
+    padding: 7px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.simple-table th {
+    position: sticky;
+    top: 0;
+    background: #eff9f6;
+    color: #2c5c52;
+}
+
+.simple-table tbody tr:hover {
+    background: #f8fcfb;
+    cursor: pointer;
+}
+
 .zoom-home-btn {
     background: #ffffff;
     border: 1px solid #a5c8bf;
@@ -311,5 +461,10 @@
 
     #map {
         height: 430px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
     }
 }

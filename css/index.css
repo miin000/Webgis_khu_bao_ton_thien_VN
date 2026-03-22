@@ -119,20 +119,40 @@ body {
     flex-wrap: wrap;
 }
 
-.simple-nav a {
+.simple-nav button {
     display: inline-block;
     padding: 7px 11px;
     border-radius: 8px;
-    text-decoration: none;
+    border: 1px solid #cae5de;
+    cursor: pointer;
     color: #19584b;
     font-weight: 600;
     background: #ecf8f4;
-    border: 1px solid #cae5de;
     font-size: 14px;
+    font-family: inherit;
 }
 
-.simple-nav a:hover {
+.simple-nav button:hover {
     background: #dff2ec;
+}
+
+.simple-nav button.is-active {
+    background: linear-gradient(120deg, #0f5f57 0%, #168173 100%);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+.main-page {
+    display: block;
+}
+
+.main-page[hidden] {
+    display: none;
+}
+
+.page-container {
+    width: min(1280px, calc(100% - 36px));
+    margin: 20px auto;
 }
 
 
@@ -202,6 +222,10 @@ body {
     }
 
     .toolbar {
+        width: calc(100% - 20px);
+    }
+
+    .page-container {
         width: calc(100% - 20px);
     }
 

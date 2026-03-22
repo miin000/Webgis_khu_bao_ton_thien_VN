@@ -11,6 +11,9 @@ GIS.config = (function () {
         center: [16.047079, 108.206230],
         bounds: L.latLngBounds(L.latLng(7.5, 101.0), L.latLng(24.0, 115.0)),
 
+        // Backend API endpoint
+        apiBaseUrl: 'http://' + host + ':3001/api/v1',
+
         // GeoServer endpoints
         wmsUrl:   'http://' + host + ':8080/geoserver/baoton_vn/wms',
         wfsUrl:   'http://' + host + ':8080/geoserver/baoton_vn/wfs',
@@ -35,6 +38,33 @@ GIS.config = (function () {
             area:       'Diện tích (ha)',
             address:    'Địa chỉ',
             management: 'Cơ quan quản lý'
+        },
+
+        // Giá trị cố định gợi ý cho form CRUD (sẽ được merge với metadata từ backend)
+        FIXED_OPTIONS: {
+            types: [
+                'Khu bảo tồn loài và sinh cảnh',
+                'Khu bảo tồn thiên nhiên',
+                'Khu dự trữ sinh quyển',
+                'Khu dự trữ thiên nhiên',
+                'Khu bảo vệ cảnh quan',
+                'Vườn quốc gia'
+            ],
+            regions: [
+                'Trung du và miền núi phía Bắc',
+                'Đồng bằng Bắc Bộ',
+                'Bắc Trung Bộ',
+                'Nam Trung Bộ',
+                'Tây Nguyên',
+                'Đông Nam Bộ',
+                'Tây Nam Bộ'
+            ],
+            layers: [
+                'bao_ton_loai_du_tru_sinh_quyen',
+                'du_tru_thien_nhien',
+                'khu_bao_ve_canh_quan',
+                'khu_vuon_quoc_gia'
+            ]
         }
     };
 }());
