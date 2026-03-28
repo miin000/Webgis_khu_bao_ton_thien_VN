@@ -101,22 +101,30 @@
                         <div style="margin-bottom: 15px; border-top: 1px solid #eee; padding-top: 10px;">
                             <p style="font-weight: 600; margin-bottom: 5px; font-size: 13px;">Tìm kiếm & Tỉnh thành:</p>
 
-                            <input type="text" id="mapSearchInput" placeholder="Nhập tên khu bảo tồn..."
-                                style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
+                            <div class="search-group" style="display: flex; flex-direction: column; gap: 10px;">
 
-                            <input list="provinceList" id="filterProvince" placeholder="Tỉnh/Thành phố"
-                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
-                            <datalist id="provinceList"></datalist>
+                                <input type="text" id="mapSearchInput" placeholder="Nhập tên khu bảo tồn..."
+                                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
+
+                                <div class="province-wrapper">
+                                    <input list="provinceList" id="filterProvince" placeholder="Tỉnh/Thành phố"
+                                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
+                                    <datalist id="provinceList"></datalist>
+                                </div>
+
+                                <input type="number" id="filterYear" placeholder="Năm thành lập (vd: 1986)"
+                                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
+
+                            </div>
+
                         </div>
-
                     </div>
-            </div>
 
-            <div class="panel-block" id="detailPanel" hidden>
-                <h3>Thông tin chi tiết</h3>
-                <div id="detailContent"></div>
-            </div>
-            </aside>
+                    <div class="panel-block" id="detailPanel" hidden>
+                        <h3>Thông tin chi tiết</h3>
+                        <div id="detailContent"></div>
+                    </div>
+                </aside>
             </div>
         </section>
 

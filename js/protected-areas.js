@@ -19,6 +19,7 @@ GIS.initProtectedAreas = function (map) {
     var selectedLayer = null;  // điểm đang được chọn (highlight)
     var searchTerm = ''; // Lưu từ khóa tìm kiếm tên
     var selectedProvince = ''; // Lưu tỉnh được chọn
+    var searchYear = '';// luu nam
 
     var wfsUrl = cfg.wfsUrl
         + '?service=WFS&version=1.0.0&request=GetFeature'
@@ -100,24 +101,29 @@ GIS.initProtectedAreas = function (map) {
             filter: function (feature) {
                 var p = feature.properties || {};
 
-                // 1. Lọc theo checkbox Loại
+                //  Lọc theo checkbox Loại
                 var t = String(p.type || '').trim();
                 var typeMatch = activeTypes[t] !== false;
 
-                // 2. Lọc theo từ khóa Tìm kiếm Tên
+                //  Lọc theo từ khóa Tìm kiếm Tên
                 var nameMatch = true;
                 if (searchTerm) {
                     nameMatch = (p.name || '').toLowerCase().includes(searchTerm);
                 }
 
-                // 3. Lọc theo Tỉnh/Địa chỉ
+                // Lọc theo Tỉnh/Địa chỉ
                 var provinceMatch = true;
                 if (selectedProvince) {
                     provinceMatch = (p.address || '').includes(selectedProvince);
                 }
+                // Lọc theo Năm thành lập 
+                var yearMatch = true;
+                if (searchYear) {
 
-                // Trả về true nếu thỏa mãn TẤT CẢ các điều kiện
-                return typeMatch && nameMatch && provinceMatch;
+                    yearMatch = String(p.founded || '').includes(searchYear);
+                }
+
+                return typeMatch && nameMatch && provinceMatch && yearMatch;;
             },
 
             onEachFeature: function (feature, layer) {
@@ -229,7 +235,7 @@ GIS.initProtectedAreas = function (map) {
     // Expose for admin CRUD so map can be refreshed after create/update/delete.
     GIS.refreshProtectedAreas = loadPreferredSource;
 
-    // Lắng nghe tìm kiếm tên
+
     var inputSearch = document.getElementById('mapSearchInput');
     if (inputSearch) {
         inputSearch.addEventListener('input', function () {
@@ -238,7 +244,6 @@ GIS.initProtectedAreas = function (map) {
         });
     }
 
-    // Lắng nghe chọn tỉnh
     var inputProv = document.getElementById('filterProvince');
     if (inputProv) {
         inputProv.addEventListener('input', function () {
@@ -246,7 +251,13 @@ GIS.initProtectedAreas = function (map) {
             renderLayer();
         });
     }
-
+    var inputYear = document.getElementById('filterYear');
+    if (inputYear) {
+        inputYear.addEventListener('input', function () {
+            searchYear = this.value.trim();
+            renderLayer();
+        });
+    }
     // ─────────────────────────────────────────────────────────────────────────
     // Tải dữ liệu API (ưu tiên) -> WFS -> WMS
     // ─────────────────────────────────────────────────────────────────────────

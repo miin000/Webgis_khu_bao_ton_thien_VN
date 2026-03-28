@@ -470,10 +470,11 @@
 }
 
 #mapSearchInput,
-#filterProvince {
+#filterProvince,
+#filterYear {
     width: 100% !important;
-    /* Ép chiều rộng bằng khung chứa */
     box-sizing: border-box !important;
+    /* Quan trọng nhất để chống tràn */
     display: block;
     margin: 8px 0;
     padding: 8px;
@@ -485,8 +486,10 @@
     color: var(--gis-text);
 }
 
+/* Hiệu ứng focus đồng bộ cho cả 3 */
 #mapSearchInput:focus,
-#filterProvince:focus {
+#filterProvince:focus,
+#filterYear:focus {
     border-color: var(--gis-teal-500);
     outline: none;
     box-shadow: 0 0 0 2px rgba(22, 129, 115, 0.1);
