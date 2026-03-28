@@ -468,3 +468,26 @@
         gap: 4px;
     }
 }
+
+#mapSearchInput,
+#filterProvince {
+    width: 100% !important;
+    /* Ép chiều rộng bằng khung chứa */
+    box-sizing: border-box !important;
+    display: block;
+    margin: 8px 0;
+    padding: 8px;
+    border: 1px solid var(--gis-border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    background: #ffffff;
+    color: var(--gis-text);
+}
+
+#mapSearchInput:focus,
+#filterProvince:focus {
+    border-color: var(--gis-teal-500);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(22, 129, 115, 0.1);
+}

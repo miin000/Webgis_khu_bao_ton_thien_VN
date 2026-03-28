@@ -2,21 +2,23 @@
  * protected-areas.js — Lớp khu bảo tồn thiên nhiên.
  *
  * Chức năng:
- *  - Tải dữ liệu GeoJSON từ GeoServer WFS
- *  - Vẽ circleMarker với màu theo loại khu bảo tồn
- *  - Xây dựng bộ lọc checkbox theo loại
- *  - Hiển thị bảng thông tin chi tiết khi click vào điểm
- *  - Fallback sang WMS nếu WFS bị lỗi CORS
+ * - Tải dữ liệu GeoJSON từ GeoServer WFS
+ * - Vẽ circleMarker với màu theo loại khu bảo tồn
+ * - Xây dựng bộ lọc checkbox theo loại
+ * - Hiển thị bảng thông tin chi tiết khi click vào điểm
+ * - Fallback sang WMS nếu WFS bị lỗi CORS
  */
 
 GIS.initProtectedAreas = function (map) {
     var cfg = GIS.config;
 
     // ── Trạng thái nội bộ ────────────────────────────────────────────────────
-    var rawData      = null;   // toàn bộ GeoJSON nhận được từ WFS
-    var activeTypes  = {};     // { 'Vườn quốc gia': true/false, ... }
+    var rawData = null;   // toàn bộ GeoJSON nhận được từ WFS
+    var activeTypes = {};     // { 'Vườn quốc gia': true/false, ... }
     var geoJsonLayer = null;   // layer đang hiển thị trên bản đồ
     var selectedLayer = null;  // điểm đang được chọn (highlight)
+    var searchTerm = ''; // Lưu từ khóa tìm kiếm tên
+    var selectedProvince = ''; // Lưu tỉnh được chọn
 
     var wfsUrl = cfg.wfsUrl
         + '?service=WFS&version=1.0.0&request=GetFeature'
@@ -86,30 +88,61 @@ GIS.initProtectedAreas = function (map) {
             pointToLayer: function (feature, latlng) {
                 var color = GIS.getColor(feature.properties && feature.properties.type);
                 return L.circleMarker(latlng, {
-                    radius:      7,
-                    fillColor:   color,
-                    color:       '#fff',
-                    weight:      1,
-                    opacity:     0.7,
+                    radius: 7,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 1,
+                    opacity: 0.7,
                     fillOpacity: 0.85
                 });
             },
 
-            // Chỉ hiển thị loại đang được bật trong bộ lọc
             filter: function (feature) {
-                var t = String((feature.properties && feature.properties.type) || '').trim();
-                return activeTypes[t] !== false;
+                var p = feature.properties || {};
+
+                // 1. Lọc theo checkbox Loại
+                var t = String(p.type || '').trim();
+                var typeMatch = activeTypes[t] !== false;
+
+                // 2. Lọc theo từ khóa Tìm kiếm Tên
+                var nameMatch = true;
+                if (searchTerm) {
+                    nameMatch = (p.name || '').toLowerCase().includes(searchTerm);
+                }
+
+                // 3. Lọc theo Tỉnh/Địa chỉ
+                var provinceMatch = true;
+                if (selectedProvince) {
+                    provinceMatch = (p.address || '').includes(selectedProvince);
+                }
+
+                // Trả về true nếu thỏa mãn TẤT CẢ các điều kiện
+                return typeMatch && nameMatch && provinceMatch;
             },
 
-            // Click → highlight + hiện chi tiết
             onEachFeature: function (feature, layer) {
                 layer.on('click', function () {
                     highlightLayer(layer);
                     showDetail(feature.properties || {});
                 });
             }
-
         }).addTo(map);
+    }
+
+    function updateProvinceList(data) {
+        var provinceSet = new Set();
+        (data.features || []).forEach(function (f) {
+            var addr = f.properties && f.properties.address;
+            if (addr) provinceSet.add(addr.trim());
+        });
+
+        var datalist = document.getElementById('provinceList');
+        if (!datalist) return;
+
+        var sorted = Array.from(provinceSet).sort();
+        datalist.innerHTML = sorted.map(function (t) {
+            return '<option value="' + t + '">';
+        }).join('');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -123,12 +156,12 @@ GIS.initProtectedAreas = function (map) {
         var html = '';
         types.forEach(function (t) {
             var color = GIS.getColor(t);
-            var safe  = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+            var safe = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
             html +=
                 '<label class="legend-item">' +
-                    '<input type="checkbox" checked data-type="' + safe + '">' +
-                    '<span class="legend-dot" style="background:' + color + '"></span>' +
-                    '<span>' + safe + '</span>' +
+                '<input type="checkbox" checked data-type="' + safe + '">' +
+                '<span class="legend-dot" style="background:' + color + '"></span>' +
+                '<span>' + safe + '</span>' +
                 '</label>';
         });
 
@@ -152,17 +185,18 @@ GIS.initProtectedAreas = function (map) {
             if (t) { types[t] = true; activeTypes[t] = true; }
         });
 
+        updateProvinceList(data);
         buildFilter(Object.keys(types).sort());
         renderLayer();
     }
 
     function loadFromWfs() {
         return fetch(wfsUrl)
-        .then(function (r) {
-            if (!r.ok) throw new Error('WFS HTTP ' + r.status);
-            return r.json();
-        })
-        .then(processData);
+            .then(function (r) {
+                if (!r.ok) throw new Error('WFS HTTP ' + r.status);
+                return r.json();
+            })
+            .then(processData);
     }
 
     function loadPreferredSource() {
@@ -183,10 +217,10 @@ GIS.initProtectedAreas = function (map) {
                         '<p class="filter-error">Không tải được API/WFS.<br>Vui lòng kiểm tra backend hoặc CORS GeoServer.</p>';
 
                     L.tileLayer.wms(cfg.wmsUrl, {
-                        layers:      'baoton_vn:protected_area_vn',
-                        format:      'image/png',
+                        layers: 'baoton_vn:protected_area_vn',
+                        format: 'image/png',
                         transparent: true,
-                        version:     '1.1.1'
+                        version: '1.1.1'
                     }).addTo(map);
                 });
             });
@@ -194,6 +228,24 @@ GIS.initProtectedAreas = function (map) {
 
     // Expose for admin CRUD so map can be refreshed after create/update/delete.
     GIS.refreshProtectedAreas = loadPreferredSource;
+
+    // Lắng nghe tìm kiếm tên
+    var inputSearch = document.getElementById('mapSearchInput');
+    if (inputSearch) {
+        inputSearch.addEventListener('input', function () {
+            searchTerm = this.value.toLowerCase().trim();
+            renderLayer();
+        });
+    }
+
+    // Lắng nghe chọn tỉnh
+    var inputProv = document.getElementById('filterProvince');
+    if (inputProv) {
+        inputProv.addEventListener('input', function () {
+            selectedProvince = this.value.trim();
+            renderLayer();
+        });
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Tải dữ liệu API (ưu tiên) -> WFS -> WMS
