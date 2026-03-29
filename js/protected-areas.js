@@ -211,14 +211,12 @@ GIS.initProtectedAreas = function (map) {
             var t = String(p.type || '').trim();
             if (t) { types[t] = true; activeTypes[t] = true; }
 
-            // XỬ LÝ VÙNG (Region): Chuẩn hóa để không bị lặp và dư dòng
             var r = String(p.region || '')
-                .replace(/[\n\r\t]+/g, ' ') // Xóa ký tự xuống dòng, tab
-                .replace(/\s+/g, ' ')       // Gom nhiều khoảng trắng thành 1
-                .trim();                    // Xóa khoảng trắng 2 đầu
+                .replace(/[\n\r\t]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
 
             if (r) {
-                // Chuyển về chữ hoa đầu từ để tránh lặp: "Bắc Trung Bộ" vs "Bắc trung bộ"
                 var normalizedRegion = r.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase());
                 regionsSet.add(normalizedRegion);
             }
