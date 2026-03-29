@@ -16,7 +16,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Bước 1 – tạo bản đồ, trả về { map, osm, esriWorldImagery, provincesWms }
     var layers = GIS.initMap();
-    var map    = layers.map;
+    var map = layers.map;
 
     // Bước 2 – tải và hiển thị khu bảo tồn
     GIS.initProtectedAreas(map);
@@ -37,4 +37,54 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 50);
         }
     };
+
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polyline: true,
+            polygon: true,
+            rectangle: true,
+            circle: false,
+            marker: false
+        },
+        edit: {
+            featureGroup: drawnItems
+        }
+    });
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+        var layer = e.layer;
+        drawnItems.addLayer(layer);
+
+        var geojson = layer.toGeoJSON();
+
+        if (e.layerType === 'polyline') {
+            let length = turf.length(geojson, { units: 'kilometers' });
+            layer.bindPopup("Khoảng cách: " + length.toFixed(2) + " km").openPopup();
+        }
+
+        if (e.layerType === 'polygon' || e.layerType === 'rectangle') {
+            let area = turf.area(geojson);
+            layer.bindPopup("Diện tích: " + (area / 1000000).toFixed(2) + " km²").openPopup();
+        }
+    });
+
+    // ================= IN BẢN ĐỒ =================
+    L.control.browserPrint({
+        position: 'topleft',
+        title: 'In bản đồ',
+        documentTitle: 'Ban_do_khu_bao_ton'
+    }).addTo(map);
+
+    GIS.onMainTabChanged = function (tabId) {
+        if (tabId === 'pageMap') {
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 50);
+        }
+    };
 });
+

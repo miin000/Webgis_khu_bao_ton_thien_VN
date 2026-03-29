@@ -47,17 +47,21 @@ GIS.initStats = function () {
         }).join('');
     }
     function loadStats() {
-        setMessage('Dang tai thong ke...', false);
+        setMessage('Đang tải dữ liệu...', false);
+
+        // Tải thống kê Loại
         apiFetch('/statistics/types')
             .then(function (data) {
                 render(data.items || []);
-                setMessage('Tong so doi tuong: ' + Number(data.total || 0).toLocaleString('vi-VN'), false);
+                // Chỉ hiện tổng số khi tải thành công Loại
+                setMessage('Tổng số đối tượng: ' + Number(data.total || 0).toLocaleString('vi-VN'), false);
             })
             .catch(function (error) {
                 render([]);
-                setMessage('Khong tai duoc thong ke: ' + error.message, true);
+                setMessage('Lỗi tải Loại: ' + error.message, true); // Ghi rõ lỗi ở đâu
             });
 
+        // Tải thống kê Vùng
         apiFetch('/statistics/regions')
             .then(function (data) {
                 renderRegion(data.items || []);
@@ -65,8 +69,8 @@ GIS.initStats = function () {
             .catch(function (error) {
                 console.error('Lỗi vùng:', error.message);
                 renderRegion([]);
+                // Không dùng setMessage ở đây để tránh đè lên thông báo của bảng Loại
             });
-
     }
 
     if (btnReloadStats) {

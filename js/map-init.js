@@ -1,108 +1,130 @@
 /**
  * map-init.js — Khởi tạo bản đồ Leaflet và các lớp nền.
- *
- * Trả về object { map, osm, esriWorldImagery, provincesWms }
- * để các module khác (controls, protected-areas) sử dụng.
  */
 
 GIS.initMap = function () {
     var cfg = GIS.config;
 
-    // ── Khởi tạo bản đồ ──────────────────────────────────────────────────────
+    // ── Khởi tạo bản đồ ─────────────────────────────
     var map = L.map('map', {
-        center:             cfg.center,
-        zoom:               6,
-        minZoom:            5,
-        maxZoom:            19,
-        maxBounds:          cfg.bounds,
+        center: cfg.center,
+        zoom: 6,
+        minZoom: 5,
+        maxZoom: 19,
+        maxBounds: cfg.bounds,
         maxBoundsViscosity: 1.0
     });
 
     map.fitBounds(cfg.bounds.pad(-0.1));
 
+    // Lấy vị trí người dùng 
+    var locateButton = L.control({ position: 'topleft' });
 
-    // Quay trở lại vị trí
+    locateButton.onAdd = function () {
+        var div = L.DomUtil.create('div', 'leaflet-bar');
 
-var locateButton = L.control({position:'topleft'});
+        var btn = L.DomUtil.create('button', '', div);
+        btn.innerHTML = '🧭';
+        btn.style.padding = '5px';
 
-locateButton.onAdd = function(map){
+        L.DomEvent.on(btn, 'click', function (e) {
+            L.DomEvent.stopPropagation(e);
 
-    var div = L.DomUtil.create('div','leaflet-bar');
+            map.locate({
+                setView: true,
+                maxZoom: 13,
+                enableHighAccuracy: true
+            });
+        });
 
-    div.innerHTML = '<button id="locateBtn" style="padding:5px">🧭</button>';
+        return div;
+    };
 
-    return div;
-};
+    locateButton.addTo(map);
 
-locateButton.addTo(map);
+    // Tìm khu gần nhất 
 
+    var nearestButton = L.control({ position: 'topleft' });
 
-document.addEventListener("click", function(e){
+    nearestButton.onAdd = function () {
+        var div = L.DomUtil.create('div', 'leaflet-bar');
 
-    if(e.target && e.target.id === "locateBtn"){
+        var btn = L.DomUtil.create('button', '', div);
+        btn.innerHTML = '🌿';
+        btn.style.padding = '5px';
 
-        map.locate();
+        L.DomEvent.on(btn, 'click', function (e) {
+            L.DomEvent.stopPropagation(e);
 
-    }
+            map.locate();
 
-});
+            map.once('locationfound', function (e) {
+                findNearestReserve(map, e.latlng);
+            });
+        });
 
-// lấy vị trí người dùng 
+        return div;
+    };
 
-map.locate();
+    nearestButton.addTo(map);
 
-map.on('locationfound', function(e){
+    // Hiện thị vị trí người dùng 
+    var userMarker = null;
+    var userCircle = null;
 
-    var userLatLng = e.latlng;   // lưu vị trí của bạn
+    map.on('locationfound', function (e) {
 
-    map.setView(userLatLng, 13);
+        var userLatLng = e.latlng;
 
-    L.marker(userLatLng)
-        .addTo(map)
-        .bindPopup(" Bạn đang ở đây")
-        .openPopup();
+        if (userMarker) map.removeLayer(userMarker);
+        if (userCircle) map.removeLayer(userCircle);
 
-    L.circle(userLatLng, e.accuracy).addTo(map);
+        userMarker = L.marker(userLatLng)
+            .addTo(map)
+            .bindPopup("📍 Bạn đang ở đây")
+            .openPopup();
 
-    findNearestReserve(userLatLng);   // gọi hàm tìm khu bảo tồn gần nhất
-});
+        userCircle = L.circle(userLatLng, e.accuracy).addTo(map);
+    });
 
-    // ── Lớp nền ───────────────────────────────────────────────────────────────
+    // LỚP NỀN
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; OpenStreetMap'
     });
 
     var esriWorldImagery = L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        { maxZoom: 19, attribution: 'Tiles &copy; Esri' }
+        { maxZoom: 19 }
     );
 
     osm.addTo(map);
 
-    // ── Ranh giới tỉnh (WMS) ─────────────────────────────────────────────────
+    // Ranh giới tỉnh 
+
     var provincesWms = L.tileLayer.wms(cfg.vnWmsUrl, {
-        layers:      'bao_ton_thien_viet_nam:vietnam_provines',
-        format:      'image/png',
+        layers: 'bao_ton_thien_viet_nam:vietnam_provines',
+        format: 'image/png',
         transparent: true,
-        version:     '1.1.1',
-        attribution: 'GeoServer'
+        version: '1.1.1'
     }).addTo(map);
 
-    return { map: map, osm: osm, esriWorldImagery: esriWorldImagery, provincesWms: provincesWms };
+    return { map, osm, esriWorldImagery, provincesWms };
 };
+// Hàm tìm khu gần nhất 
+function findNearestReserve(map, userLatLng){
 
-
-
-function findNearestReserve(userLatLng){
+    if(!window.protectedAreasLayer){
+        alert("Chưa có dữ liệu khu bảo tồn!");
+        return;
+    }
 
     var nearest = null;
     var minDistance = Infinity;
 
-    protectedAreasLayer.eachLayer(function(layer){
+    window.protectedAreasLayer.eachLayer(function(layer){
 
         var reserveLatLng = layer.getLatLng();
-
         var distance = map.distance(userLatLng, reserveLatLng);
 
         if(distance < minDistance){
@@ -114,13 +136,14 @@ function findNearestReserve(userLatLng){
 
     if(nearest){
 
-        nearest.openPopup();
+        var km = (minDistance/1000).toFixed(2);
+        var name = nearest.feature.properties.name || "Không rõ";
 
-        alert("Khu bảo tồn gần nhất cách bạn " + 
-              (minDistance/1000).toFixed(2) + " km");
+        map.setView(nearest.getLatLng(), 13);
 
+        nearest.bindPopup(
+            "<b>🌿 " + name + "</b><br>" +
+            "Khoảng cách: <b>" + km + " km</b>"
+        ).openPopup();
     }
 }
-
-
-

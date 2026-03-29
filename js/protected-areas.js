@@ -138,6 +138,7 @@ GIS.initProtectedAreas = function (map) {
                 });
             }
         }).addTo(map);
+        window.protectedAreasLayer = geoJsonLayer;
     }
 
     function updateProvinceList(data) {
@@ -185,22 +186,59 @@ GIS.initProtectedAreas = function (map) {
             });
         });
     }
+    function updateRegionList(regionsObj) {
+        var selectRegion = document.getElementById('filterRegion');
+        if (!selectRegion) return;
 
+        var regions = Object.keys(regionsObj).sort();
+        var html = '<option value="">-- Tất cả các Miền --</option>';
+
+        regions.forEach(function (r) {
+            html += '<option value="' + r + '">' + r + '</option>';
+        });
+
+        selectRegion.innerHTML = html;
+    }
     function processData(data) {
         rawData = data;
-
-        // Thu thập các loại khu bảo tồn có trong dữ liệu
         var types = {};
+        var regionsSet = new Set();
+
         (data.features || []).forEach(function (f) {
-            var t = String((f.properties && f.properties.type) || '').trim();
+            var p = f.properties || {};
+
+            // Xử lý Loại (Type)
+            var t = String(p.type || '').trim();
             if (t) { types[t] = true; activeTypes[t] = true; }
+
+            // XỬ LÝ VÙNG (Region): Chuẩn hóa để không bị lặp và dư dòng
+            var r = String(p.region || '')
+                .replace(/[\n\r\t]+/g, ' ') // Xóa ký tự xuống dòng, tab
+                .replace(/\s+/g, ' ')       // Gom nhiều khoảng trắng thành 1
+                .trim();                    // Xóa khoảng trắng 2 đầu
+
+            if (r) {
+                // Chuyển về chữ hoa đầu từ để tránh lặp: "Bắc Trung Bộ" vs "Bắc trung bộ"
+                var normalizedRegion = r.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase());
+                regionsSet.add(normalizedRegion);
+            }
         });
+
+        // Tự động đổ dữ liệu sạch vào HTML
+        var selectRegion = document.getElementById('filterRegion');
+        if (selectRegion) {
+            var html = '<option value="">-- Tất cả các Miền --</option>';
+            // Sắp xếp theo bảng chữ cái
+            Array.from(regionsSet).sort().forEach(function (reg) {
+                html += '<option value="' + reg + '">' + reg + '</option>';
+            });
+            selectRegion.innerHTML = html;
+        }
 
         updateProvinceList(data);
         buildFilter(Object.keys(types).sort());
         renderLayer();
     }
-
     function loadFromWfs() {
         return fetch(wfsUrl)
             .then(function (r) {
@@ -246,6 +284,23 @@ GIS.initProtectedAreas = function (map) {
         inputSearch.addEventListener('input', function () {
             searchTerm = this.value.toLowerCase().trim();
             renderLayer();
+
+            // Zoom đến khu bảo tồn tìm được
+            if (!searchTerm || !geoJsonLayer) return;
+
+            var found = false;
+
+            geoJsonLayer.eachLayer(function (l) {
+                if (found) return;
+
+                let ten = (l.feature.properties.name || '').toLowerCase();
+
+                if (ten.includes(searchTerm)) {
+                    map.setView(l.getLatLng(), 12); // zoom đúng điểm
+                    highlightLayer(l);              // highlight
+                    found = true;
+                }
+            });
         });
     }
 
