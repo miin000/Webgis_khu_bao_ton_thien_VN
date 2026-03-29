@@ -20,6 +20,7 @@ GIS.initProtectedAreas = function (map) {
     var searchTerm = ''; // Lưu từ khóa tìm kiếm tên
     var selectedProvince = ''; // Lưu tỉnh được chọn
     var searchYear = '';// luu nam
+    var selectedRegion = ''; //lưu vùng được chọn
 
     var wfsUrl = cfg.wfsUrl
         + '?service=WFS&version=1.0.0&request=GetFeature'
@@ -122,8 +123,12 @@ GIS.initProtectedAreas = function (map) {
 
                     yearMatch = String(p.founded || '').includes(searchYear);
                 }
-
-                return typeMatch && nameMatch && provinceMatch && yearMatch;;
+                var regionMatch = true;
+                if (selectedRegion) {
+                    var featureRegion = String(p.region || '').trim();
+                    regionMatch = (featureRegion === selectedRegion.trim());
+                }
+                return typeMatch && nameMatch && provinceMatch && yearMatch && regionMatch;
             },
 
             onEachFeature: function (feature, layer) {
@@ -255,6 +260,13 @@ GIS.initProtectedAreas = function (map) {
     if (inputYear) {
         inputYear.addEventListener('input', function () {
             searchYear = this.value.trim();
+            renderLayer();
+        });
+    }
+    var inputRegion = document.getElementById('filterRegion');
+    if (inputRegion) {
+        inputRegion.addEventListener('change', function () {
+            selectedRegion = this.value;
             renderLayer();
         });
     }

@@ -470,6 +470,7 @@
 }
 
 #mapSearchInput,
+#filterRegion,
 #filterProvince,
 #filterYear {
     width: 100% !important;
@@ -486,8 +487,8 @@
     color: var(--gis-text);
 }
 
-/* Hiệu ứng focus đồng bộ cho cả 3 */
 #mapSearchInput:focus,
+#filterRegion:focus,
 #filterProvince:focus,
 #filterYear:focus {
     border-color: var(--gis-teal-500);

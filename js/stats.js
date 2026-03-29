@@ -6,6 +6,7 @@ GIS.initStats = function () {
     var cfg = GIS.config;
     var btnReloadStats = document.getElementById('btnReloadStats');
     var statsBody = document.querySelector('#statsTypeTable tbody');
+    var statsRegionBody = document.querySelector('#statsRegionTable tbody');
     var statsMessage = document.getElementById('statsMessage');
 
     function setMessage(text, isError) {
@@ -34,7 +35,17 @@ GIS.initStats = function () {
             return '<tr><td>' + (item.type || '') + '</td><td>' + Number(item.total || 0).toLocaleString('vi-VN') + '</td></tr>';
         }).join('');
     }
+    function renderRegion(items) {
+        if (!statsRegionBody) return;
+        if (!items || !items.length) {
+            statsRegionBody.innerHTML = '<tr><td colspan="2">Chua co du lieu thong ke</td></tr>';
+            return;
+        }
 
+        statsRegionBody.innerHTML = items.map(function (item) {
+            return '<tr><td>' + (item.region || '') + '</td><td>' + Number(item.total || 0).toLocaleString('vi-VN') + '</td></tr>';
+        }).join('');
+    }
     function loadStats() {
         setMessage('Dang tai thong ke...', false);
         apiFetch('/statistics/types')
@@ -46,6 +57,16 @@ GIS.initStats = function () {
                 render([]);
                 setMessage('Khong tai duoc thong ke: ' + error.message, true);
             });
+
+        apiFetch('/statistics/regions')
+            .then(function (data) {
+                renderRegion(data.items || []);
+            })
+            .catch(function (error) {
+                console.error('Lỗi vùng:', error.message);
+                renderRegion([]);
+            });
+
     }
 
     if (btnReloadStats) {

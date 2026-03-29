@@ -114,6 +114,26 @@
 
                                 <input type="number" id="filterYear" placeholder="Năm thành lập (vd: 1986)"
                                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
+                                <div class="region-wrapper">
+                                    <select id="filterRegion"
+                                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; background-color: white;">
+                                        <option value="">-- Tất cả các Miền --</option>
+                                        <option value="Trung du
+                                        và miền núi
+                                        phía Bắc">Trung du
+                                            và miền núi
+                                            phía Bắc</option>
+                                        <option value="Đồng bằng
+                                        Bắc Bộ">Đồng bằng
+                                            Bắc Bộ</option>
+                                        <option value="Bắc Trung Bộ">Bắc Trung Bộ</option>
+                                        <option value="Nam Trung Bộ">Nam Trung Bộ</option>
+                                        <option value="Đông Nam Bộ">Đông Nam Bộ</option>
+                                        <option value="Tây Nam Bộ">Tây Nam Bộ</option>
+                                        <option value="Tây Nguyên">Tây Nguyên</option>
+                                        <option value="Đồng bằng sông Cửu Long">Đồng bằng sông Cửu Long</option>
+                                    </select>
+                                </div>
 
                             </div>
 
@@ -208,7 +228,8 @@
             <div class="page-container">
                 <aside class="info-panel page-panel">
                     <h2>Thống kê khu bảo tồn</h2>
-                    <p class="panel-hint">Thống kê tổng số lượng theo từng loại khu bảo tồn.</p>
+                    <p class="panel-hint">Thống kê tổng số lượng theo từng loại và vùng địa lý.</p>
+
                     <div class="panel-block">
                         <h3>Tổng quan theo loại</h3>
                         <button id="btnReloadStats" type="button">Tải lại thống kê</button>
@@ -225,6 +246,22 @@
                             </table>
                         </div>
                     </div>
+
+                    <div class="panel-block">
+                        <h3>Tổng quan theo vùng</h3>
+                        <div class="table-wrap">
+                            <table class="simple-table" id="statsRegionTable">
+                                <thead>
+                                    <tr>
+                                        <th>Vùng địa lý</th>
+                                        <th>Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </aside>
             </div>
         </section>
