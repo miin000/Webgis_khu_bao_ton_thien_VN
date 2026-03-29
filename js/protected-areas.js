@@ -241,6 +241,23 @@ GIS.initProtectedAreas = function (map) {
         inputSearch.addEventListener('input', function () {
             searchTerm = this.value.toLowerCase().trim();
             renderLayer();
+
+            // Zoom đến khu bảo tồn tìm được
+            if (!searchTerm || !geoJsonLayer) return;
+
+            var found = false;
+
+            geoJsonLayer.eachLayer(function (l) {
+                if (found) return;
+
+                let ten = (l.feature.properties.name || '').toLowerCase();
+
+                if (ten.includes(searchTerm)) {
+                    map.setView(l.getLatLng(), 12); // zoom đúng điểm
+                    highlightLayer(l);              // highlight
+                    found = true;
+                }
+            });
         });
     }
 
