@@ -111,7 +111,6 @@ GIS.initMap = function () {
 
     return { map, osm, esriWorldImagery, provincesWms };
 };
-─
 // Hàm tìm khu gần nhất 
 function findNearestReserve(map, userLatLng){
 
