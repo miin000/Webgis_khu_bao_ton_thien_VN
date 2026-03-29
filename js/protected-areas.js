@@ -133,6 +133,7 @@ GIS.initProtectedAreas = function (map) {
                 });
             }
         }).addTo(map);
+        window.protectedAreasLayer = geoJsonLayer;
     }
 
     function updateProvinceList(data) {
@@ -278,5 +279,5 @@ GIS.initProtectedAreas = function (map) {
     // ─────────────────────────────────────────────────────────────────────────
     // Tải dữ liệu API (ưu tiên) -> WFS -> WMS
     // ─────────────────────────────────────────────────────────────────────────
-    loadPreferredSource();
+    loadFromWfs();
 };
