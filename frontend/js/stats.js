@@ -1,11 +1,11 @@
 /**
- * stats.js — Thong ke so luong khu bao ton theo loai.
+ * stats.js — Thong ke so luong khu bao ton theo loai va theo vung.
  */
 
 GIS.initStats = function () {
     var cfg = GIS.config;
     var btnReloadStats = document.getElementById('btnReloadStats');
-    var statsBody = document.querySelector('#statsTypeTable tbody');
+    var statsTypeBody = document.querySelector('#statsTypeTable tbody');
     var statsRegionBody = document.querySelector('#statsRegionTable tbody');
     var statsMessage = document.getElementById('statsMessage');
 
@@ -24,17 +24,18 @@ GIS.initStats = function () {
         });
     }
 
-    function render(items) {
-        if (!statsBody) return;
+    function renderType(items) {
+        if (!statsTypeBody) return;
         if (!items || !items.length) {
-            statsBody.innerHTML = '<tr><td colspan="2">Chua co du lieu thong ke</td></tr>';
+            statsTypeBody.innerHTML = '<tr><td colspan="2">Chua co du lieu thong ke</td></tr>';
             return;
         }
 
-        statsBody.innerHTML = items.map(function (item) {
+        statsTypeBody.innerHTML = items.map(function (item) {
             return '<tr><td>' + (item.type || '') + '</td><td>' + Number(item.total || 0).toLocaleString('vi-VN') + '</td></tr>';
         }).join('');
     }
+
     function renderRegion(items) {
         if (!statsRegionBody) return;
         if (!items || !items.length) {
@@ -46,30 +47,26 @@ GIS.initStats = function () {
             return '<tr><td>' + (item.region || '') + '</td><td>' + Number(item.total || 0).toLocaleString('vi-VN') + '</td></tr>';
         }).join('');
     }
-    function loadStats() {
-        setMessage('Đang tải dữ liệu...', false);
 
-        // Tải thống kê Loại
+    function loadStats() {
+        setMessage('Dang tai thong ke...', false);
+
         apiFetch('/statistics/types')
             .then(function (data) {
-                render(data.items || []);
-                // Chỉ hiện tổng số khi tải thành công Loại
-                setMessage('Tổng số đối tượng: ' + Number(data.total || 0).toLocaleString('vi-VN'), false);
+                renderType(data.items || []);
+                setMessage('Tong so doi tuong: ' + Number(data.total || 0).toLocaleString('vi-VN'), false);
             })
             .catch(function (error) {
-                render([]);
-                setMessage('Lỗi tải Loại: ' + error.message, true); // Ghi rõ lỗi ở đâu
+                renderType([]);
+                setMessage('Loi tai thong ke theo loai: ' + error.message, true);
             });
 
-        // Tải thống kê Vùng
         apiFetch('/statistics/regions')
             .then(function (data) {
                 renderRegion(data.items || []);
             })
-            .catch(function (error) {
-                console.error('Lỗi vùng:', error.message);
+            .catch(function () {
                 renderRegion([]);
-                // Không dùng setMessage ở đây để tránh đè lên thông báo của bảng Loại
             });
     }
 

@@ -50,7 +50,7 @@ geom phai la geometry SRID 4326.
 
 ## 3) Chay frontend
 
-Mo index.html bang Live Server hoac static server.
+Mo frontend/index.html bang Live Server hoac static server.
 
 Frontend se tu dong goi API o host hien tai cong 3001:
 

@@ -1,0 +1,556 @@
+:root {
+    --gis-teal-900: #063c3a;
+    --gis-teal-700: #0f5f57;
+    --gis-teal-500: #168173;
+    --gis-mint-100: #e9f7f4;
+    --gis-panel: #f8fcfb;
+    --gis-border: #cfe3de;
+    --gis-text: #1f2f2b;
+}
+
+.map-container {
+    width: min(1280px, calc(100% - 36px));
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: minmax(0, 2.2fr) minmax(320px, 1fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.map-stage {
+    border: 1px solid var(--gis-border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 14px 26px rgba(6, 60, 58, 0.14);
+    background: #ffffff;
+}
+
+.map-toolbar {
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(120deg, var(--gis-teal-900) 0%, var(--gis-teal-700) 65%, var(--gis-teal-500) 100%);
+    color: #ffffff;
+}
+
+.map-toolbar-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.map-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.map-toolbar-actions button,
+.map-toolbar-actions a {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 13px;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.map-toolbar-actions button:hover,
+.map-toolbar-actions a:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+#map {
+    width: 100%;
+    height: 620px;
+}
+
+.map-statusbar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 9px 12px;
+    border-top: 1px solid var(--gis-border);
+    font-size: 12px;
+    color: #36524d;
+    background: var(--gis-mint-100);
+}
+
+.info-panel {
+    background: radial-gradient(circle at top right, #ffffff 0%, var(--gis-panel) 45%, #eef8f5 100%);
+    border: 1px solid var(--gis-border);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 22px rgba(15, 95, 87, 0.13);
+    color: var(--gis-text);
+}
+
+.info-panel h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+    color: var(--gis-teal-900);
+}
+
+.panel-hint {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #446760;
+    font-size: 14px;
+}
+
+.page-panel {
+    width: min(980px, 100%);
+    margin: 0 auto;
+}
+
+.crud-layout {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(340px, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.crud-panel-left,
+.crud-panel-right {
+    margin: 0;
+}
+
+.crud-panel-right .panel-block {
+    margin-bottom: 0;
+}
+
+.panel-block {
+    border: 1px solid var(--gis-border);
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.panel-block h3 {
+    margin: 0 0 8px;
+    color: var(--gis-teal-700);
+    font-size: 14px;
+}
+
+.panel-block p {
+    margin: 6px 0;
+}
+
+.feature-info {
+    max-height: 440px;
+    overflow: auto;
+    font-size: 14px;
+    color: #23312d;
+    border: 1px solid var(--gis-border);
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 10px;
+}
+
+.feature-info p {
+    margin: 0;
+}
+
+.feature-title {
+    margin: 0 0 10px;
+    color: var(--gis-teal-900);
+}
+
+.feature-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.feature-table th,
+.feature-table td {
+    border-bottom: 1px solid #e6efed;
+    padding: 7px 6px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.feature-table th {
+    width: 42%;
+    color: #315e54;
+    font-weight: 600;
+}
+
+.map-loading {
+    color: #2f6f5e;
+    font-style: italic;
+}
+
+.fallback-open {
+    margin-top: 12px;
+}
+
+.fallback-open a {
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffeccf;
+    border: 1px solid #e7c27d;
+    color: #7b4e07;
+    border-radius: 8px;
+    padding: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+}
+
+.fallback-open a:hover {
+    background: #ffe3b7;
+}
+
+/* ── Filter / Legend ──────────────────────────────────────────────────────── */
+.filter-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1.4;
+    user-select: none;
+}
+
+.legend-item input[type=checkbox] {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    accent-color: var(--gis-teal-700);
+}
+
+.legend-dot {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.filter-loading {
+    color: #6a8f88;
+    font-style: italic;
+    margin: 0;
+    font-size: 13px;
+}
+
+.filter-error {
+    color: #a33;
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── Detail table ─────────────────────────────────────────────────────────── */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.detail-table th,
+.detail-table td {
+    border-bottom: 1px solid #e6efed;
+    padding: 7px 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.detail-table th {
+    width: 40%;
+    color: #315e54;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.detail-table td {
+    color: var(--gis-text);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-row span {
+    font-size: 12px;
+    color: #355951;
+    font-weight: 600;
+}
+
+.form-row input,
+.form-row select {
+    border: 1px solid #c9ded8;
+    border-radius: 6px;
+    padding: 7px 8px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #ffffff;
+}
+
+.form-row input[readonly] {
+    background: #f1f6f5;
+    color: #46635d;
+}
+
+.crud-actions {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.crud-actions button,
+#btnReloadLogs {
+    border: 1px solid #aacfc5;
+    background: #ecf8f5;
+    color: #0f5f57;
+    border-radius: 8px;
+    padding: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.crud-actions button:hover,
+#btnReloadLogs:hover {
+    background: #d9f0e9;
+}
+
+.crud-actions .danger {
+    border-color: #dfafb4;
+    background: #fff2f4;
+    color: #9e2a37;
+}
+
+.crud-actions .danger:hover {
+    background: #fee3e7;
+}
+
+.panel-note {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #567b73;
+}
+
+.crud-message {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #2f6f5e;
+}
+
+.crud-message.error {
+    color: #a33;
+}
+
+.table-wrap {
+    margin-top: 8px;
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid #d5e7e2;
+    border-radius: 8px;
+}
+
+.list-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.crud-search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.crud-search-row input {
+    border: 1px solid #c9ded8;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    min-width: 0;
+}
+
+.crud-search-row button {
+    border: 1px solid #aacfc5;
+    background: #ecf8f5;
+    color: #0f5f57;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.crud-search-row button:hover {
+    background: #d9f0e9;
+}
+
+.list-pagination button {
+    border: 1px solid #aacfc5;
+    background: #ecf8f5;
+    color: #0f5f57;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.list-pagination button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#listPageInfo {
+    font-size: 12px;
+    color: #2f6f5e;
+}
+
+.simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: #fff;
+}
+
+.simple-table th,
+.simple-table td {
+    border-bottom: 1px solid #edf4f2;
+    padding: 7px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.simple-table th {
+    position: sticky;
+    top: 0;
+    background: #eff9f6;
+    color: #2c5c52;
+}
+
+.simple-table tbody tr:hover {
+    background: #f8fcfb;
+    cursor: pointer;
+}
+
+.zoom-home-btn {
+    background: #ffffff;
+    border: 1px solid #a5c8bf;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #0f5f57;
+    font-weight: 700;
+    width: 34px;
+    height: 34px;
+    line-height: 30px;
+    text-align: center;
+}
+
+.zoom-home-btn:hover {
+    background: #ecf8f5;
+}
+
+@media (max-width: 1024px) {
+    .map-container {
+        grid-template-columns: 1fr;
+        width: calc(100% - 20px);
+    }
+
+    .crud-layout {
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    #map {
+        height: 500px;
+    }
+
+    .feature-info {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 640px) {
+    .map-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .map-toolbar-actions {
+        width: 100%;
+    }
+
+    .map-toolbar-actions button,
+    .map-toolbar-actions a {
+        flex: 1;
+        text-align: center;
+    }
+
+    #map {
+        height: 430px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .crud-search-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+#mapSearchInput,
+#filterRegion,
+#filterProvince,
+#filterYear {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    /* Quan trọng nhất để chống tràn */
+    display: block;
+    margin: 8px 0;
+    padding: 8px;
+    border: 1px solid var(--gis-border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    background: #ffffff;
+    color: var(--gis-text);
+}
+
+/* Hiệu ứng focus đồng bộ cho cả 3 */
+#mapSearchInput:focus,
+#filterRegion:focus,
+#filterProvince:focus,
+#filterYear:focus {
+    border-color: var(--gis-teal-500);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(22, 129, 115, 0.1);
+}

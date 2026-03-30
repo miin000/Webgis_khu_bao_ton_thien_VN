@@ -22,9 +22,20 @@ GIS.initProtectedAreas = function (map) {
     var searchYear = '';// luu nam
     var selectedRegion = ''; //lưu vùng được chọn
 
-    var wfsUrl = cfg.wfsUrl
-        + '?service=WFS&version=1.0.0&request=GetFeature'
-        + '&typeName=baoton_vn:protected_area_vn&outputFormat=application/json';
+    var layerNames = [
+        cfg.protectedAreasLayerName || 'baoton_vn:protected_area_vn_postgis',
+        cfg.protectedAreasLayerFallbackName || 'baoton_vn:protected_area_vn'
+    ].filter(function (name, index, arr) {
+        return !!name && arr.indexOf(name) === index;
+    });
+
+    function buildWfsUrl(layerName) {
+        return cfg.wfsUrl
+            + '?service=WFS&version=1.0.0&request=GetFeature'
+            + '&typeName=' + encodeURIComponent(layerName)
+            + '&outputFormat=application/json';
+    }
+
     var apiGeoJsonUrl = cfg.apiBaseUrl + '/protected-areas/geojson';
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -238,12 +249,32 @@ GIS.initProtectedAreas = function (map) {
         renderLayer();
     }
     function loadFromWfs() {
-        return fetch(wfsUrl)
-            .then(function (r) {
-                if (!r.ok) throw new Error('WFS HTTP ' + r.status);
-                return r.json();
-            })
-            .then(processData);
+        var lastError = null;
+
+        function tryLayer(index) {
+            if (index >= layerNames.length) {
+                throw (lastError || new Error('Khong co layer WFS hop le.'));
+            }
+
+            var layerName = layerNames[index];
+            var url = buildWfsUrl(layerName);
+
+            return fetch(url)
+                .then(function (r) {
+                    if (!r.ok) throw new Error('WFS HTTP ' + r.status + ' (' + layerName + ')');
+                    return r.json();
+                })
+                .then(function (data) {
+                    processData(data);
+                    return data;
+                })
+                .catch(function (error) {
+                    lastError = error;
+                    return tryLayer(index + 1);
+                });
+        }
+
+        return tryLayer(0);
     }
 
     function loadPreferredSource() {
@@ -264,7 +295,7 @@ GIS.initProtectedAreas = function (map) {
                         '<p class="filter-error">Không tải được API/WFS.<br>Vui lòng kiểm tra backend hoặc CORS GeoServer.</p>';
 
                     L.tileLayer.wms(cfg.wmsUrl, {
-                        layers: 'baoton_vn:protected_area_vn',
+                        layers: layerNames[0],
                         format: 'image/png',
                         transparent: true,
                         version: '1.1.1'

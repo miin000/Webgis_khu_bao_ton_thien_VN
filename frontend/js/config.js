@@ -19,6 +19,10 @@ GIS.config = (function () {
         wfsUrl:   'http://' + host + ':8080/geoserver/baoton_vn/wfs',
         vnWmsUrl: 'http://' + host + ':8080/geoserver/bao_ton_thien_viet_nam/wms',
 
+        // Lop khu bao ton tren GeoServer (uu tien postgis)
+        protectedAreasLayerName: 'baoton_vn:protected_area_vn_postgis',
+        protectedAreasLayerFallbackName: 'baoton_vn:protected_area_vn',
+
         // Màu theo loại khu bảo tồn
         TYPE_COLORS: {
             'Vườn quốc gia':                 '#00aa25',

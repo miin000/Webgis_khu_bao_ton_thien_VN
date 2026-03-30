@@ -26,7 +26,10 @@ GIS.initAdmin = function (map) {
     var btnReloadLogs = document.getElementById('btnReloadLogs');
     var btnListPrev = document.getElementById('btnListPrev');
     var btnListNext = document.getElementById('btnListNext');
+    var btnCrudSearch = document.getElementById('btnCrudSearch');
+    var btnCrudClearSearch = document.getElementById('btnCrudClearSearch');
     var elListPageInfo = document.getElementById('listPageInfo');
+    var elCrudSearchName = document.getElementById('crudSearchName');
 
     var elCrudMessage = document.getElementById('crudMessage');
     var elLogsMessage = document.getElementById('logsMessage');
@@ -37,6 +40,8 @@ GIS.initAdmin = function (map) {
     var listPage = 1;
     var listPageSize = 50;
     var listLastCount = 0;
+    var selectedCrudId = null;
+    var listSearchName = '';
 
     function setCrudMessage(text, isError) {
         if (!elCrudMessage) return;
@@ -117,6 +122,7 @@ GIS.initAdmin = function (map) {
     }
 
     function clearForm(keepId) {
+        if (!keepId) selectedCrudId = null;
         if (!keepId && elId) elId.value = '';
         if (elName) elName.value = '';
         if (elType) elType.value = '';
@@ -132,6 +138,7 @@ GIS.initAdmin = function (map) {
     }
 
     function fillForm(data) {
+        selectedCrudId = Number(data.id);
         if (elId) elId.value = data.id || '';
         if (elName) elName.value = data.name || '';
         if (elType) elType.value = data.type || '';
@@ -177,6 +184,17 @@ GIS.initAdmin = function (map) {
             status: elStatus ? (elStatus.value || 'active') : 'active',
             geometry: getGeometryFromForm()
         };
+    }
+
+    function getValidatedIdForAction() {
+        var raw = elId ? String(elId.value || '').trim() : '';
+        var id = Number(raw);
+
+        if (!raw || !Number.isInteger(id)) {
+            return null;
+        }
+
+        return id;
     }
 
     function refreshMapLayer() {
@@ -232,12 +250,18 @@ GIS.initAdmin = function (map) {
 
     function loadList() {
         var offset = (listPage - 1) * listPageSize;
-        apiFetch('/protected-areas?limit=' + listPageSize + '&offset=' + offset + '&status=all')
+        var path = '/protected-areas?limit=' + listPageSize + '&offset=' + offset + '&status=all';
+        if (listSearchName) {
+            path += '&q=' + encodeURIComponent(listSearchName);
+        }
+
+        apiFetch(path)
             .then(function (data) {
                 listLastCount = (data.items || []).length;
                 renderList(data.items || []);
                 if (elListPageInfo) {
-                    elListPageInfo.textContent = 'Trang ' + listPage + ' - ' + listPageSize + ' khu/trang';
+                    var suffix = listSearchName ? ' | Loc ten: "' + listSearchName + '"' : '';
+                    elListPageInfo.textContent = 'Trang ' + listPage + ' - ' + listPageSize + ' khu/trang' + suffix;
                 }
                 if (btnListPrev) btnListPrev.disabled = listPage <= 1;
                 if (btnListNext) btnListNext.disabled = listLastCount < listPageSize;
@@ -273,8 +297,8 @@ GIS.initAdmin = function (map) {
     }
 
     btnLoad && btnLoad.addEventListener('click', function () {
-        var id = Number(elId && elId.value);
-        if (!Number.isFinite(id)) {
+        var id = getValidatedIdForAction();
+        if (!id) {
             setCrudMessage('Vui long nhap ID hop le de nap.', true);
             return;
         }
@@ -285,6 +309,7 @@ GIS.initAdmin = function (map) {
                 setCrudMessage('Da nap du lieu ID ' + id + '.', false);
             })
             .catch(function (error) {
+                selectedCrudId = null;
                 setCrudMessage('Nap that bai: ' + error.message, true);
             });
     });
@@ -308,6 +333,7 @@ GIS.initAdmin = function (map) {
             body: JSON.stringify(payload)
         })
             .then(function (data) {
+                selectedCrudId = Number(data.id);
                 if (elId) elId.value = data.id;
                 setCrudMessage('Da tao moi thanh cong. ID: ' + data.id, false);
                 listPage = 1;
@@ -321,9 +347,14 @@ GIS.initAdmin = function (map) {
     });
 
     btnUpdate && btnUpdate.addEventListener('click', function () {
-        var id = Number(elId && elId.value);
-        if (!Number.isFinite(id)) {
-            setCrudMessage('Vui long nhap ID hop le de cap nhat.', true);
+        var id = getValidatedIdForAction();
+        if (!id) {
+            setCrudMessage('Ban chua chon khu bao ton. Hay chon 1 dong trong danh sach roi bam "Nap theo ID".', true);
+            return;
+        }
+
+        if (selectedCrudId !== id) {
+            setCrudMessage('ID hien tai chua duoc nap hop le. Bam "Nap theo ID" truoc khi cap nhat.', true);
             return;
         }
 
@@ -362,6 +393,28 @@ GIS.initAdmin = function (map) {
         if (listLastCount < listPageSize) return;
         listPage += 1;
         loadList();
+    });
+
+    btnCrudSearch && btnCrudSearch.addEventListener('click', function () {
+        listSearchName = (elCrudSearchName && elCrudSearchName.value ? elCrudSearchName.value : '').trim();
+        listPage = 1;
+        loadList();
+    });
+
+    btnCrudClearSearch && btnCrudClearSearch.addEventListener('click', function () {
+        listSearchName = '';
+        if (elCrudSearchName) elCrudSearchName.value = '';
+        listPage = 1;
+        loadList();
+    });
+
+    elCrudSearchName && elCrudSearchName.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            listSearchName = (elCrudSearchName.value || '').trim();
+            listPage = 1;
+            loadList();
+        }
     });
 
     map.on('click', function (e) {

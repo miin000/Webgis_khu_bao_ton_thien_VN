@@ -221,6 +221,28 @@ router.get('/statistics/types', async (_req, res) => {
   }
 });
 
+router.get('/statistics/regions', async (_req, res) => {
+  try {
+    const sql = `
+      SELECT COALESCE(NULLIF(TRIM(region), ''), 'Khong xac dinh') AS region, COUNT(*)::int AS total
+      FROM ${fullTable}
+      WHERE COALESCE(status, 'active') = 'active'
+      GROUP BY COALESCE(NULLIF(TRIM(region), ''), 'Khong xac dinh')
+      ORDER BY total DESC, region ASC
+    `;
+
+    const result = await db.query(sql);
+    const total = result.rows.reduce((acc, row) => acc + Number(row.total || 0), 0);
+
+    res.json({
+      total,
+      items: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.get('/protected-areas/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
